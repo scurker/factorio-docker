@@ -115,6 +115,19 @@ Copy mods into the mods folder and restart the server.
 
 As of 0.17 a new environment variable was added (UPDATE\_MODS\_ON\_START) which if set to 1 will cause the mods get to updated on server start. If set a valid [factorio.com username & token](https://www.factorio.com/profile) must be supplied or else the server will not start. They can either be set as secrets mounted as /run/secrets/username & /run/secrets/token or (not recomented) as environment variables USERNAME & TOKEN.
 
+```
+docker run -d \
+  -p 34197:34197/udp \
+  -p 27015:27015/tcp \
+  -v /opt/factorio:/factorio \
+  -e UPDATE_MODS_ON_START=1 \
+  -e USERNAME=__YourFactorio.comUserName__ \
+  -e TOKEN=__YourRealToken__ \
+  --name factorio \
+  --restart=always \
+  dtandersen/factorio
+```
+
 ## Scenarios
 
 If you want to launch a scenario from a clean start (not from a saved map) you'll need to start the docker image from an alternate entrypoint. To do this, use the example entrypoint file stored in the /factorio/entrypoints directory in the volume, and launch the image with the following syntax. Note that this is the normal syntax with the addition of the --entrypoint setting AND the additional argument at the end, which is the name of the Scenario in the Scenarios folder.
