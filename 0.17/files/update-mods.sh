@@ -72,8 +72,10 @@ update_mod()
   return 0
 }
 
-for mod in $(jq -r ".mods|map(select(.enabled))|.[].name" $MOD_DIR/mod-list.json); do
-  if [ $mod != "base" ]; then
-    update_mod $mod
-  fi
-done
+if [ -f $MOD_DIR/mod-list.json ]; then
+  for mod in $(jq -r ".mods|map(select(.enabled))|.[].name" $MOD_DIR/mod-list.json); do
+    if [ $mod != "base" ]; then
+      update_mod $mod
+    fi
+  done
+fi
