@@ -113,6 +113,12 @@ To generate a new map stop the server, delete all of the saves and restart the s
 
 Copy mods into the mods folder and restart the server.
 
+### Updating Mods
+
+Add your [factorio.com username & token](https://www.factorio.com/profile) as secrets mounted as /run/secrets/username & /run/secrets/token or (not recomented) as environment variables USERNAME & TOKEN.
+
+Run the "docker-update-mods.sh" script while the container is running and when the the script finishes restart the container:
+  docker exec ContainerName ./docker-update-mods.sh
 
 ## Scenarios
 
