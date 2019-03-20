@@ -32,11 +32,12 @@ update_mod()
   MOD_INFO_URL="$MOD_BASE_URL/api/mods/$MOD_NAME"
   MOD_INFO_JSON=$(curl --silent $MOD_INFO_URL)
   
-  MOD_INFO=$(curl --silent $MOD_INFO_URL | jq -j --arg version $FACTORIO_VERSION ".releases|reverse|map(select(.info_json.factorio_version as \$mod_version | \$version | startswith(\$mod_version)))[0]|.file_name, \" \", .download_url")
+  MOD_INFO=$(curl --silent $MOD_INFO_URL | jq -j --arg version $FACTORIO_VERSION ".releases|reverse|map(select(.info_json.factorio_version as \$mod_version | \$version | startswith(\$mod_version)))[0]|.file_name, \" \", .download_url, \" \", .sha1")
 
   set -- $MOD_INFO
   MOD_FILENAME=$1
   MOD_URL=$2
+  MOD_SHA1=$3
 
   if [ -z "$MOD_URL" ]; then
     return 1
@@ -48,23 +49,25 @@ update_mod()
   fi
 
   if [ -f $MOD_DIR/$MOD_FILENAME ]; then
-    print_success "Already up-to-date"
+    print_success "  Already up-to-date"
     return 0
   fi
 
   FULL_URL=$MOD_BASE_URL$MOD_URL?username=$USERNAME\&token=$TOKEN 
-  HTTP_STATUS=$(curl --silent -w "%{http_code}" -o $MOD_DIR/$MOD_FILENAME $FULL_URL)
+  HTTP_STATUS=$(curl --silent -L -w "%{http_code}" -o $MOD_DIR/$MOD_FILENAME $FULL_URL)
 
-  if [ ! $HTTP_STATUS -eq 302 ]; then
-    print_failure "  Failed to download, missing your username and token?"
-    rm $MOD_DIR/$MOD_FILENAME #Will download a html page instead... so delete it =
+  set -- $(sha1sum $MOD_DIR/$MOD_FILENAME)
+  if [ $1 != $MOD_SHA1 ]; then
+    print_failure "  SHA1 mismatch"
+    rm $MOD_DIR/$MOD_FILENAME
     return 1
   fi
 
-  print_success "Downloaded $MOD_NAME"
+  print_success "  Downloaded $MOD_NAME"
+
   for file in $MOD_DIR/$MOD_NAME*.zip; do
     if [ $file != $MOD_DIR/$MOD_FILENAME ]; then
-      echo "  Deleting old verion: $file"
+      print_success "  Deleting old verion: $file"
       rm $file
     fi
   done
@@ -76,6 +79,9 @@ if [ -f $MOD_DIR/mod-list.json ]; then
   for mod in $(jq -r ".mods|map(select(.enabled))|.[].name" $MOD_DIR/mod-list.json); do
     if [ $mod != "base" ]; then
       update_mod $mod
+      if [ ! $? -eq 0 ]; then
+        return $?
+      fi
     fi
   done
 fi
