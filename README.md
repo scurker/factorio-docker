@@ -113,6 +113,20 @@ To generate a new map stop the server, delete all of the saves and restart the s
 
 Copy mods into the mods folder and restart the server.
 
+As of 0.17 a new environment variable was added (UPDATE\_MODS\_ON\_START) which if set to 1 will cause the mods get to updated on server start. If set a valid [factorio.com username & token](https://www.factorio.com/profile) must be supplied or else the server will not start. They can either be set as docker secrets, environment variables, or pulled from the server-settings.json file.
+
+```
+docker run -d \
+  -p 34197:34197/udp \
+  -p 27015:27015/tcp \
+  -v /opt/factorio:/factorio \
+  -e UPDATE_MODS_ON_START=1 \
+  -e USERNAME=__YourFactorio.comUserName__ \
+  -e TOKEN=__YourRealToken__ \
+  --name factorio \
+  --restart=always \
+  dtandersen/factorio
+```
 
 ## Scenarios
 

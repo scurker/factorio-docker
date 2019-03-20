@@ -34,6 +34,10 @@ if find -L $SAVES -iname \*.tmp.zip -mindepth 1 -print | grep -q .; then
   rm -f $SAVES/*.tmp.zip
 fi
 
+if [ $UPDATE_MODS_ON_START -eq 1 ]; then
+  ./docker-update-mods.sh
+fi
+
 if [ "$(id -u)" = '0' ]; then
   # Take ownership of factorio data if running as root
   chown -R factorio:factorio $FACTORIO_VOL
