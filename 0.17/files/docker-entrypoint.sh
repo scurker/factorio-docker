@@ -34,7 +34,7 @@ if find -L $SAVES -iname \*.tmp.zip -mindepth 1 -print | grep -q .; then
   rm -f $SAVES/*.tmp.zip
 fi
 
-if [ $UPDATE_MODS_ON_START -eq 1 ]; then
+if [ "$UPDATE_MODS_ON_START" = "1" ] || [ "$UPDATE_MODS_ON_START" = "true" ]; then
   ./docker-update-mods.sh
 fi
 
