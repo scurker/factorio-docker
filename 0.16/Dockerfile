@@ -15,7 +15,9 @@ ENV PORT=34197 \
     CONFIG=/factorio/config \
     MODS=/factorio/mods \
     SCENARIOS=/factorio/scenarios \
-    SCRIPTOUTPUT=/factorio/script-output
+    SCRIPTOUTPUT=/factorio/script-output \
+    PUID=$PUID \
+    PGID=$PGID
 
 RUN mkdir -p /opt /factorio && \
     apk add --update --no-cache pwgen && \
