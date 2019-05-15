@@ -3,6 +3,8 @@ set -euo pipefail
 
 id
 
+FACTORIO_VOL=/factorio
+mkdir -p "$FACTORIO_VOL"
 mkdir -p "$SAVES"
 mkdir -p "$CONFIG"
 mkdir -p "$MODS"
@@ -29,14 +31,26 @@ if find -L "$SAVES" -iname \*.tmp.zip -mindepth 1 -print | grep -q .; then
   rm -f "$SAVES/*.tmp.zip"
 fi
 
+if [ "$(id -u)" = '0' ]; then
+  # Update the User and Group ID based on the PUID/PGID variables
+  usermod -o -u "$PUID" factorio
+  groupmod -o -g "$PGID" factorio
+  # Take ownership of factorio data if running as root
+  chown -R factorio:factorio $FACTORIO_VOL
+  # Drop to the factorio user
+  SU_EXEC="su-exec factorio"
+else
+  SU_EXEC=""
+fi
+
 if ! find -L "$SAVES" -iname \*.zip -mindepth 1 -print | grep -q .; then
-  /opt/factorio/bin/x64/factorio \
+  $SU_EXEC /opt/factorio/bin/x64/factorio \
     --create "$SAVES/_autosave1.zip" \
     --map-gen-settings "$CONFIG/map-gen-settings.json" \
     --map-settings "$CONFIG/map-settings.json"
 fi
 
-exec /opt/factorio/bin/x64/factorio \
+$SU_EXEC /opt/factorio/bin/x64/factorio \
   --port "$PORT" \
   --start-server-load-latest \
   --server-settings "$CONFIG/server-settings.json" \
