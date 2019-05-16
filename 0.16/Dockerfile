@@ -16,8 +16,8 @@ ENV PORT=34197 \
     MODS=/factorio/mods \
     SCENARIOS=/factorio/scenarios \
     SCRIPTOUTPUT=/factorio/script-output \
-    PUID=$PUID \
-    PGID=$PGID
+    PUID="$PUID" \
+    PGID="$PGID"
 
 RUN mkdir -p /opt /factorio && \
     apk add --update --no-cache pwgen su-exec shadow && \
