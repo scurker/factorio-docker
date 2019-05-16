@@ -36,7 +36,7 @@ if [ "$(id -u)" = '0' ]; then
   usermod -o -u "$PUID" factorio
   groupmod -o -g "$PGID" factorio
   # Take ownership of factorio data if running as root
-  chown -R factorio:factorio $FACTORIO_VOL
+  chown -R factorio:factorio "$FACTORIO_VOL"
   # Drop to the factorio user
   SU_EXEC="su-exec factorio"
 else
